@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ SITE_NAME|default:'樱花技术博客' }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}个人技术博客，记录学习过程{% endblock %}">
+
+    <!-- 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 样式 -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header class="site-header">
+        <nav class="navbar">
+            <div class="container">
+                <a href="{% url 'blog:home' %}" class="logo">
+                    <span class="logo-icon">🌸</span>
+                    <span class="logo-text">樱花技术博客</span>
+                </a>
+
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="{% url 'blog:home' %}">首页</a></li>
+                    <li><a href="{% url 'blog:archive' %}">归档</a></li>
+                    <li><a href="{% url 'blog:post_list' %}">文章</a></li>
+                    <li><a href="{% url 'blog:about' %}">关于</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>关于博客</h3>
+                    <p>记录技术学习过程，分享编程心得。专注于Python、Django、Web开发等技术领域。</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'blog:home' %}">首页</a></li>
+                        <li><a href="{% url 'blog:archive' %}">归档</a></li>
+                        <li><a href="{% url 'blog:post_list' %}">全部文章</a></li>
+                        <li><a href="{% url 'blog:about' %}">关于</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>订阅通讯</h3>
+                    <p>订阅以获取最新文章更新</p>
+                    <form class="newsletter-form" action="{% url 'newsletter:subscribe' %}" method="post">
+                        {% csrf_token %}
+                        <input type="email" name="email" placeholder="输入邮箱地址" required>
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 樱花技术博客. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-weixin"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 装饰元素 -->
+        <div class="footer-decoration">
+            <div class="sakura s1"></div>
+            <div class="sakura s2"></div>
+            <div class="sakura s3"></div>
+        </div>
+    </footer>
+
+    <!-- 消息提示 -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+            <button class="close-btn">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

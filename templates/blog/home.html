@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - 樱花技术博客{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 特色文章滑块 -->
+    {% if featured_posts %}
+    <section class="featured-slider">
+        <div class="slider-container">
+            {% for featured in featured_posts %}
+            <div class="slider-slide">
+                <div class="slider-content">
+                    <span class="featured-badge">
+                        <i class="fas fa-star"></i> 特色文章
+                    </span>
+                    <h2 class="slider-title">{{ featured.title }}</h2>
+                    <p class="slider-excerpt">{{ featured.excerpt|truncatechars:150 }}</p>
+                    <a href="{% url 'blog:post_detail' featured.slug %}" class="slider-btn">
+                        阅读全文 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="slider-image" style="background: linear-gradient(135deg, #FBCFE8 0%, #E0F2FE 100%);">
+                    {% if featured.cover_image %}
+                    <div style="width: 100%; height: 100%; background-size: cover; background-position: center; background-image: url('{{ featured.cover_image.url }}');"></div>
+                    {% else %}
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 5rem; opacity: 0.3;">
+                        🌸
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if featured_posts|length > 1 %}
+        <button class="slider-nav prev"><i class="fas fa-chevron-left"></i></button>
+        <button class="slider-nav next"><i class="fas fa-chevron-right"></i></button>
+        <div class="slider-controls"></div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    <div style="display: grid; grid-template-columns: 1fr 320px; gap: 2rem; margin-top: 2rem;">
+        <!-- 文章列表 -->
+        <div class="posts-section">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-feather-alt" style="color: var(--color-gold);"></i>
+                最新文章
+            </h2>
+
+            <div class="post-grid" style="grid-template-columns: 1fr;">
+                {% for post in posts %}
+                <div class="post-card fade-in stagger-{{ forloop.counter }}">
+                    <div class="post-card-image" style="background: linear-gradient(135deg, #FBCFE8 0%, #E0F2FE 100%);">
+                        {% if post.category %}
+                        <span class="post-card-category">{{ post.category.name }}</span>
+                        {% endif %}
+                        {% if post.cover_image %}
+                        <div style="width: 100%; height: 100%; background-size: cover; background-position: center; background-image: url('{{ post.cover_image.url }}');"></div>
+                        {% endif %}
+                    </div>
+                    <div class="post-card-content">
+                        <h3 class="post-card-title">
+                            <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                        </h3>
+                        <p class="post-card-excerpt">{{ post.excerpt|truncatechars:120 }}</p>
+                        <div class="post-card-meta">
+                            <span><i class="fas fa-user"></i> {{ post.author.username }}</span>
+                            <span><i class="fas fa-calendar"></i> {{ post.published_at|date:"Y/m/d" }}</span>
+                            <span><i class="fas fa-eye"></i> {{ post.views }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--color-text-muted); padding: 3rem;">
+                    暂无文章，敬请期待！
+                </p>
+                {% endfor %}
+            </div>
+
+            <!-- 分页 -->
+            {% if page_obj.has_other_pages %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-chevron-left"></i></a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><i class="fas fa-chevron-right"></i></a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <!-- 作者卡片 -->
+            <div class="sidebar-widget author-card">
+                <div class="author-avatar">🌸</div>
+                <h3 class="author-name">樱花少女</h3>
+                <p class="author-bio">热爱技术，热爱编程的二次元少女。专注于Python、Django和Web开发。</p>
+                <div style="margin-top: 1rem;">
+                    <a href="{% url 'blog:about' %}" class="slider-btn" style="font-size: 0.9rem;">了解更多</a>
+                </div>
+            </div>
+
+            <!-- 标签云 -->
+            <div class="sidebar-widget">
+                <h3 class="sidebar-title">标签云</h3>
+                <div class="tag-cloud">
+                    {% for tag in popular_tags %}
+                    <a href="{% url 'blog:tag' tag.slug %}" class="tag tag-{% if forloop.counter <= 3 %}large{% endif %}">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 系列文章 -->
+            {% if series_list %}
+            <div class="sidebar-widget">
+                <h3 class="sidebar-title">文章系列</h3>
+                <ul style="list-style: none;">
+                    {% for series in series_list %}
+                    <li style="margin-bottom: 0.75rem;">
+                        <a href="{% url 'blog:series' series.slug %}" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-book" style="color: var(--color-gold);"></i>
+                            {{ series.name }}
+                            <span style="color: var(--color-text-muted); font-size: 0.85rem;">({{ series.post_count }})</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- 热门文章 -->
+            {% if popular_posts %}
+            <div class="sidebar-widget">
+                <h3 class="sidebar-title">热门文章</h3>
+                <ul style="list-style: none;">
+                    {% for popular in popular_posts %}
+                    <li style="margin-bottom: 0.75rem;">
+                        <a href="{% url 'blog:post_detail' popular.slug %}" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--color-gold); color: white; border-radius: 50%; font-size: 0.75rem;">
+                                {{ forloop.counter }}
+                            </span>
+                            {{ popular.title|truncatechars:25 }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- 订阅 -->
+            <div class="sidebar-widget" style="background: linear-gradient(135deg, var(--color-sakura) 0%, var(--color-sky) 100%);">
+                <h3 class="sidebar-title" style="border-color: var(--color-white);">订阅更新</h3>
+                <p style="margin-bottom: 1rem; color: var(--color-text);">获取最新文章推送</p>
+                <form action="{% url 'newsletter:subscribe' %}" method="post" class="newsletter-form" style="flex-direction: column;">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="输入邮箱地址" required style="width: 100%;">
+                    <button type="submit" style="width: 100%; margin-top: 0.5rem; border-radius: var(--radius-full);">订阅</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

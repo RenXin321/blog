@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python入门指南 - NEXUS BLOG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-void: #020617;
+            --bg-surface: #0f172a;
+            --bg-panel: rgba(15, 23, 42, 0.8);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bd00ff;
+            --neon-green: #0aff60;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-base: #1e293b;
+            --glow-cyan: 0 0 10px #00f3ff, 0 0 20px rgba(0, 243, 255, 0.3);
+            --glow-purple: 0 0 10px #bd00ff, 0 0 20px rgba(189, 0, 255, 0.3);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            background-color: var(--bg-void);
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 20% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 243, 255, 0.1) 0%, transparent 50%);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        h2 { margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-base); color: var(--neon-cyan); }
+        h3 { margin: 1.5rem 0 0.75rem; color: var(--text-primary); }
+        a { color: var(--neon-cyan); text-decoration: none; transition: all 0.15s ease; }
+        a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-base);
+        }
+        .site-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .navbar { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .logo-icon { font-size: 1.5rem; }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--text-secondary); font-weight: 500; padding: 0.5rem 1rem; position: relative; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-menu a::before { content: '[ '; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a::after { content: ' ]'; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .nav-menu a:hover::before, .nav-menu a:hover::after, .nav-menu a.active::before, .nav-menu a.active::after { opacity: 1; }
+
+        .main-content { padding-top: 90px; padding-bottom: 4rem; }
+
+        .post-detail { max-width: 800px; margin: 0 auto; }
+        .post-header { text-align: center; margin-bottom: 2rem; }
+        .post-category {
+            display: inline-block;
+            background: transparent;
+            color: var(--neon-cyan);
+            padding: 0.35rem 1rem;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .post-title { font-size: 2.5rem; margin-bottom: 1rem; line-height: 1.3; }
+        .post-meta { display: flex; align-items: center; justify-content: center; gap: 1.5rem; color: var(--text-muted); font-size: 0.9rem; font-family: 'JetBrains Mono', monospace; }
+        .post-meta span { display: flex; align-items: center; gap: 0.5rem; }
+
+        .post-cover-image {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, rgba(189, 0, 255, 0.2) 0%, rgba(0, 243, 255, 0.2) 100%);
+            border: 1px solid var(--border-base);
+            position: relative;
+            overflow: hidden;
+        }
+        .post-cover-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 243, 255, 0.03) 2px,
+                rgba(0, 243, 255, 0.03) 4px
+            );
+        }
+
+        .post-content { font-size: 1.1rem; }
+        .post-content p { margin-bottom: 1.5rem; color: var(--text-secondary); }
+        .post-content img { max-width: 100%; border-radius: 8px; margin: 1.5rem 0; border: 1px solid var(--border-base); }
+        .post-content blockquote {
+            border-left: 3px solid var(--neon-purple);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background: rgba(189, 0, 255, 0.1);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+        .post-content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-surface);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--neon-cyan);
+            border: 1px solid var(--border-base);
+        }
+        .post-content pre {
+            background: #0a0a0a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-base);
+            position: relative;
+        }
+        .post-content pre::before {
+            content: 'CODE';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--neon-purple);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 0 8px 0 4px;
+        }
+        .post-content pre code { background: none; padding: 0; color: #a5d6ff; border: none; }
+
+        .post-tags { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tag {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-base);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.15s ease;
+        }
+        .tag:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+
+        .series-navigation {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            border-radius: 8px;
+            position: relative;
+        }
+        .series-navigation::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+        }
+        .series-navigation h4 { margin-bottom: 1rem; color: var(--neon-purple); }
+        .series-navigation p { color: var(--text-muted); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+        .series-posts { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .comments-section { margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-base); }
+        .comments-title { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--neon-cyan); }
+
+        .comment-form {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-base);
+        }
+        .comment-form h3 { margin-bottom: 1rem; color: var(--text-primary); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-void);
+            border: 1px solid var(--border-base);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+        .btn-submit {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+        .btn-submit:hover { background: var(--neon-cyan); color: var(--bg-void); box-shadow: var(--glow-cyan); }
+
+        .comment {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-surface);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-base);
+        }
+        .comment-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            color: white;
+        }
+        .comment-body { flex: 1; }
+        .comment-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .comment-author { font-weight: 600; color: var(--text-primary); }
+        .comment-badge {
+            background: var(--neon-purple);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .comment-date { color: var(--text-muted); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
+        .comment-content { color: var(--text-secondary); }
+        .comment-replies { margin-left: 3rem; padding-left: 1rem; border-left: 2px solid var(--neon-purple); margin-top: 1rem; }
+
+        .site-footer { background: var(--bg-surface); color: var(--text-secondary); padding: 4rem 0 2rem; margin-top: 4rem; position: relative; border-top: 1px solid var(--border-base); }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-green), var(--neon-cyan));
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .footer-section h3 { color: var(--neon-cyan); font-size: 1.1rem; margin-bottom: 1rem; font-family: 'Rajdhani', sans-serif; }
+        .footer-section p { color: var(--text-secondary); }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-secondary); }
+        .footer-links a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+
+        @media (max-width: 768px) {
+            .post-title { font-size: 1.75rem; }
+            .post-cover-image { height: 250px; }
+            .comment-replies { margin-left: 1rem; }
+            .nav-menu { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo"><span class="logo-icon">⬡</span><span class="logo-text">NEXUS BLOG</span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html">系统主页</a></li>
+                <li><a href="archive.html">数据归档</a></li>
+                <li><a href="posts.html">日志库</a></li>
+                <li><a href="about.html">关于我</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <article class="post-detail">
+                <header class="post-header">
+                    <span class="post-category">Python</span>
+                    <h1 class="post-title">Python入门指南：从零开始学习Python编程</h1>
+                    <div class="post-meta">
+                        <span><i class="fas fa-user"></i> admin</span>
+                        <span><i class="fas fa-calendar"></i> 2024年01月15日</span>
+                        <span><i class="fas fa-eye"></i> 1234 阅读</span>
+                        <span><i class="fas fa-comments"></i> 5 评论</span>
+                    </div>
+                </header>
+
+                <div class="post-cover-image"></div>
+
+                <div class="post-content">
+                    <h2>简介</h2>
+                    <p>Python是一种简洁、优雅的编程语言，非常适合初学者入门。本文将带你从零开始学习Python编程，了解Python的基本语法和核心概念。</p>
+
+                    <h2>变量和数据类型</h2>
+                    <p>Python中的变量不需要声明类型，直接赋值即可：</p>
+                    <pre><code>name = "樱花少女"
+age = 18
+height = 165.5
+is_student = True</code></pre>
+
+                    <h2>基本数据结构</h2>
+                    <h3>列表</h3>
+                    <p>列表是Python中最常用的数据结构之一：</p>
+                    <pre><code>fruits = ["苹果", "香蕉", "橘子"]
+fruits.append("葡萄")
+print(fruits)</code></pre>
+
+                    <h3>字典</h3>
+                    <p>字典用于存储键值对：</p>
+                    <pre><code>person = {"name": "小明", "age": 20}
+print(person["name"])</code></pre>
+
+                    <blockquote>
+                        "代码改变世界，热爱成就未来。"
+                    </blockquote>
+
+                    <h2>结论</h2>
+                    <p>Python的语法简洁明了，非常适合编程初学者。希望通过本文档的学习，你已经掌握了Python的基础知识。</p>
+                </div>
+
+                <div class="post-tags">
+                    <a href="#" class="tag">Python</a>
+                    <a href="#" class="tag">教程</a>
+                    <a href="#" class="tag">入门</a>
+                </div>
+
+                <div class="series-navigation">
+                    <h4><i class="fas fa-stream"></i> 系列：Python进阶之路</h4>
+                    <p>第 1 篇 / 共 5 篇</p>
+                    <div class="series-posts">
+                        <a href="#" class="tag" style="background: var(--neon-purple); color: white; border-color: var(--neon-purple);">1. Python入门指南</a>
+                        <a href="#" class="tag">2. Python函数详解</a>
+                        <a href="#" class="tag">3. Python面向对象</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Comments -->
+            <section class="comments-section">
+                <h3 class="comments-title"><i class="fas fa-comments"></i> 评论 (5)</h3>
+
+                <div class="comment-form">
+                    <h3>发表评论</h3>
+                    <form>
+                        <div class="form-group">
+                            <label>昵称 *</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱 *</label>
+                            <input type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>评论内容 *</label>
+                            <textarea rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">提交评论</button>
+                    </form>
+                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> 评论需要审核后显示，请耐心等待。
+                    </p>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-avatar">S</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">小明</span>
+                            <span class="comment-date">2024年01月16日 10:30</span>
+                        </div>
+                        <div class="comment-content">
+                            很好的入门教程！讲解得很清晰，适合初学者。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-avatar">A</div>
+                    <div class="comment-body">
+                        <div class="comment-header">
+                            <span class="comment-author">admin</span>
+                            <span class="comment-badge">作者</span>
+                            <span class="comment-date">2024年01月16日 11:00</span>
+                        </div>
+                        <div class="comment-content">
+                            感谢支持！后续会更新更多进阶内容。
+                        </div>
+                        <div class="comment-replies">
+                            <div class="comment">
+                                <div class="comment-avatar" style="width:40px;height:40px;font-size:1rem;">S</div>
+                                <div class="comment-body">
+                                    <div class="comment-header">
+                                        <span class="comment-author">小明</span>
+                                        <span class="comment-date">2024年01月16日 11:30</span>
+                                    </div>
+                                    <div class="comment-content">期待！</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>系统信息</h3>
+                    <p>记录技术学习过程，分享编程心得。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">// 系统主页</a></li>
+                        <li><a href="archive.html">// 数据归档</a></li>
+                        <li><a href="about.html">// 关于我</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

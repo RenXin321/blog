@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志库 - NEXUS BLOG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-void: #020617;
+            --bg-surface: #0f172a;
+            --bg-panel: rgba(15, 23, 42, 0.8);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bd00ff;
+            --neon-green: #0aff60;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-base: #1e293b;
+            --glow-cyan: 0 0 10px #00f3ff, 0 0 20px rgba(0, 243, 255, 0.3);
+            --glow-purple: 0 0 10px #bd00ff, 0 0 20px rgba(189, 0, 255, 0.3);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-void);
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 20% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 243, 255, 0.1) 0%, transparent 50%);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+        }
+        h1, h2, h3 {
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        a { color: var(--neon-cyan); text-decoration: none; transition: all 0.15s ease; }
+        a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-base);
+        }
+        .site-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .navbar { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .logo-icon { font-size: 1.5rem; }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--text-secondary); font-weight: 500; padding: 0.5rem 1rem; position: relative; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-menu a::before { content: '[ '; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a::after { content: ' ]'; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .nav-menu a:hover::before, .nav-menu a:hover::after, .nav-menu a.active::before, .nav-menu a.active::after { opacity: 1; }
+
+        .main-content { padding-top: 90px; min-height: calc(100vh - 300px); }
+
+        .content-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin-top: 2rem; }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .post-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .post-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+        .post-card:hover::before { opacity: 1; }
+        .post-card-image {
+            height: 200px;
+            background: linear-gradient(135deg, rgba(189, 0, 255, 0.2) 0%, rgba(0, 243, 255, 0.2) 100%);
+            position: relative;
+        }
+        .post-card-category {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--bg-void);
+            color: var(--neon-cyan);
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+        .post-card-content { padding: 1.5rem; }
+        .post-card-title { font-size: 1.25rem; margin-bottom: 0.75rem; font-family: 'Rajdhani', sans-serif; }
+        .post-card-title a { color: var(--text-primary); }
+        .post-card-title a:hover { color: var(--neon-cyan); }
+        .post-card-excerpt { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
+        .post-card-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+        .post-card-meta span { display: flex; align-items: center; gap: 0.4rem; }
+
+        .sidebar-widget {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .sidebar-widget::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .sidebar-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-base);
+            color: var(--neon-cyan);
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .search-box { display: flex; gap: 0.5rem; }
+        .search-input {
+            flex: 1;
+            padding: 0.6rem 0.75rem;
+            background: var(--bg-void);
+            border: 1px solid var(--border-base);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+        .search-input:focus { outline: none; border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+        .search-btn {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .search-btn:hover { background: var(--neon-cyan); color: var(--bg-void); }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tag {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-base);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.15s ease;
+        }
+        .tag:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+
+        .site-footer { background: var(--bg-surface); color: var(--text-secondary); padding: 4rem 0 2rem; margin-top: 4rem; position: relative; border-top: 1px solid var(--border-base); }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-green), var(--neon-cyan));
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .footer-section h3 { color: var(--neon-cyan); font-size: 1.1rem; margin-bottom: 1rem; font-family: 'Rajdhani', sans-serif; }
+        .footer-section p { color: var(--text-secondary); }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-secondary); }
+        .footer-links a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+
+        @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } .nav-menu { display: none; } }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo"><span class="logo-icon">⬡</span><span class="logo-text">NEXUS BLOG</span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html">系统主页</a></li>
+                <li><a href="archive.html">数据归档</a></li>
+                <li><a href="posts.html" class="active">日志库</a></li>
+                <li><a href="about.html">关于我</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <div>
+                    <h1 class="page-title"><i class="fas fa-layer-group"></i> 日志库</h1>
+
+                    <article class="post-card">
+                        <div class="post-card-image"><span class="post-card-category">Python</span></div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">Python入门指南：从零开始学习Python编程</a></h3>
+                            <p class="post-card-excerpt">本文将带你从零开始学习Python编程，了解Python的基本语法和核心概念。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/15</span>
+                                <span><i class="fas fa-eye"></i> 1234</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-card-image"><span class="post-card-category">Django</span></div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">Django框架详解：构建现代化的Web应用</a></h3>
+                            <p class="post-card-excerpt">深入了解Django框架的核心概念和组件，学习如何构建现代化的Web应用。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/10</span>
+                                <span><i class="fas fa-eye"></i> 987</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-card-image"><span class="post-card-category">前端</span></div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">前端开发基础：HTML、CSS、JavaScript入门</a></h3>
+                            <p class="post-card-excerpt">学习前端开发的基础知识，掌握HTML、CSS和JavaScript的核心概念。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/05</span>
+                                <span><i class="fas fa-eye"></i> 756</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="post-card">
+                        <div class="post-card-image"><span class="post-card-category">API</span></div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">RESTful API设计与实现</a></h3>
+                            <p class="post-card-excerpt">学习如何设计和实现RESTful风格的API接口。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/01</span>
+                                <span><i class="fas fa-eye"></i> 543</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <aside>
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">搜索</h3>
+                        <div class="search-box">
+                            <input type="text" class="search-input" placeholder="搜索日志...">
+                            <button class="search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">标签云</h3>
+                        <div class="tag-cloud">
+                            <a href="#" class="tag">Python</a>
+                            <a href="#" class="tag">Django</a>
+                            <a href="#" class="tag">Web</a>
+                            <a href="#" class="tag">教程</a>
+                            <a href="#" class="tag">进阶</a>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>系统信息</h3>
+                    <p>记录技术学习过程，分享编程心得。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">// 系统主页</a></li>
+                        <li><a href="archive.html">// 数据归档</a></li>
+                        <li><a href="about.html">// 关于我</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星际技术博客 - System Online</title>
+    <meta name="description" content="个人技术博客，记录学习过程">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-void: #020617;
+            --bg-surface: #0f172a;
+            --bg-panel: rgba(15, 23, 42, 0.8);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bd00ff;
+            --neon-green: #0aff60;
+            --neon-pink: #ff00ff;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-base: #1e293b;
+            --glow-cyan: 0 0 10px #00f3ff, 0 0 20px rgba(0, 243, 255, 0.3);
+            --glow-purple: 0 0 10px #bd00ff, 0 0 20px rgba(189, 0, 255, 0.3);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-void);
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 20% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 243, 255, 0.1) 0%, transparent 50%);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+            min-height: 100vh;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        a { color: var(--neon-cyan); text-decoration: none; transition: all 0.15s ease; }
+        a:hover {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* Header */
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-base);
+        }
+        .site-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .navbar { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        .logo-icon {
+            font-size: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--neon-cyan); }
+            50% { opacity: 0.8; text-shadow: 0 0 20px var(--neon-cyan); }
+        }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-menu a {
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .nav-menu a::before {
+            content: '[ ';
+            color: var(--neon-purple);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .nav-menu a::after {
+            content: ' ]';
+            color: var(--neon-purple);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .nav-menu a:hover, .nav-menu a.active {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        .nav-menu a:hover::before, .nav-menu a:hover::after,
+        .nav-menu a.active::before, .nav-menu a.active::after {
+            opacity: 1;
+        }
+
+        /* Main */
+        .main-content { padding-top: 90px; min-height: calc(100vh - 300px); }
+
+        /* Slider */
+        .featured-slider {
+            position: relative;
+            margin-bottom: 3rem;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+        }
+        .featured-slider::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-cyan));
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .slider-container { display: flex; transition: transform 0.5s ease; }
+        .slider-slide {
+            min-width: 100%;
+            display: flex;
+            background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(189, 0, 255, 0.1) 100%);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+        .slider-content { flex: 1; padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+        .slider-image {
+            flex: 1;
+            min-height: 400px;
+            background:
+                linear-gradient(135deg, rgba(0, 243, 255, 0.2) 0%, rgba(189, 0, 255, 0.2) 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 243, 255, 0.03) 2px, rgba(0, 243, 255, 0.03) 4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            opacity: 0.5;
+            position: relative;
+        }
+        .slider-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0, 243, 255, 0.05) 10px, rgba(0, 243, 255, 0.05) 11px);
+        }
+        .featured-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--neon-cyan);
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            box-shadow: var(--glow-cyan);
+        }
+        .slider-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .slider-excerpt {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        .slider-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--neon-cyan);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--neon-cyan);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: all 0.2s ease;
+        }
+        .slider-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-void);
+            box-shadow: var(--glow-cyan);
+        }
+        .slider-controls { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.5rem; }
+        .slider-dot { width: 10px; height: 10px; background: var(--border-base); border: 1px solid var(--neon-cyan); cursor: pointer; transition: all 0.15s ease; }
+        .slider-dot.active { background: var(--neon-cyan); box-shadow: var(--glow-cyan); width: 30px; }
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-surface);
+            border: 1px solid var(--neon-cyan);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--neon-cyan);
+            transition: all 0.15s ease;
+        }
+        .slider-nav:hover { background: var(--neon-cyan); color: var(--bg-void); box-shadow: var(--glow-cyan); }
+        .slider-nav.prev { left: 1.5rem; clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%, 0 20%); }
+        .slider-nav.next { right: 1.5rem; clip-path: polygon(0 0, 100% 20%, 100% 100%, 0 100%); }
+
+        /* Grid */
+        .content-grid { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; margin-top: 2rem; }
+
+        /* Post Card */
+        .post-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            border-radius: 0;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            position: relative;
+        }
+        .post-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+        .post-card:hover::before { opacity: 1; }
+        .post-card-image {
+            height: 200px;
+            background:
+                linear-gradient(135deg, rgba(0, 243, 255, 0.15) 0%, rgba(189, 0, 255, 0.15) 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 243, 255, 0.05) 2px, rgba(0, 243, 255, 0.05) 4px);
+            position: relative;
+        }
+        .post-card-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(0, 243, 255, 0.03) 20px, rgba(0, 243, 255, 0.03) 21px);
+        }
+        .post-card-category {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: transparent;
+            color: var(--neon-purple);
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--neon-purple);
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 1;
+        }
+        .post-card-content { padding: 1.5rem; }
+        .post-card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .post-card-title a { color: var(--text-primary); }
+        .post-card-title a:hover {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        .post-card-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .post-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .post-card-meta i { color: var(--neon-cyan); margin-right: 4px; }
+
+        /* Sidebar */
+        .sidebar { position: sticky; top: 100px; }
+        .sidebar-widget {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .sidebar-widget::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .sidebar-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-base);
+            color: var(--neon-cyan);
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tag {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-base);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.15s ease;
+        }
+        .tag:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Author Card */
+        .author-card { text-align: center; position: relative; }
+        .author-card::before {
+            content: '// OPERATOR';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--neon-purple);
+            letter-spacing: 2px;
+        }
+        .author-avatar {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2) 0%, rgba(189, 0, 255, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+            position: relative;
+        }
+        .author-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 1px dashed var(--neon-purple);
+            animation: rotate 10s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .author-name {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+        }
+        .author-bio {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Section Title */
+        .section-title {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .section-title i {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        .section-title::before {
+            content: '>';
+            color: var(--neon-green);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Newsletter */
+        .newsletter-widget {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1) 0%, rgba(189, 0, 255, 0.1) 100%);
+            border-color: var(--neon-purple);
+        }
+        .newsletter-widget::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0, 243, 255, 0.02) 5px, rgba(0, 243, 255, 0.02) 6px);
+            pointer-events: none;
+        }
+        .newsletter-widget .sidebar-title {
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+        }
+        .newsletter-form { display: flex; flex-direction: column; gap: 0.5rem; }
+        .newsletter-form input {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-base);
+            border-radius: 0;
+            background: var(--bg-void);
+            color: var(--neon-cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .newsletter-form input::placeholder { color: var(--text-muted); }
+        .newsletter-form input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+        .newsletter-form button {
+            background: transparent;
+            border: 1px solid var(--neon-purple);
+            color: var(--neon-purple);
+            padding: 0.75rem;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.15s ease;
+        }
+        .newsletter-form button:hover {
+            background: var(--neon-purple);
+            color: var(--bg-void);
+            box-shadow: var(--glow-purple);
+        }
+
+        /* Footer */
+        .site-footer {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+            position: relative;
+            border-top: 1px solid var(--border-base);
+        }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-green), var(--neon-cyan));
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        .footer-section h3 {
+            color: var(--neon-cyan);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .footer-section p { color: var(--text-secondary); line-height: 1.6; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.5rem; }
+        .footer-links a { color: var(--text-secondary); }
+        .footer-links a:hover {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-base);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        .social-links { display: flex; gap: 1rem; }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .social-links a:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Grid decoration */
+        .footer-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0.3;
+        }
+        .grid-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+            height: 1px;
+            animation: gridMove 20s linear infinite;
+        }
+        .grid-line:nth-child(1) { top: 20%; left: 0; width: 100%; animation-delay: 0s; }
+        .grid-line:nth-child(2) { top: 50%; left: 0; width: 100%; animation-delay: -5s; }
+        .grid-line:nth-child(3) { top: 80%; left: 0; width: 100%; animation-delay: -10s; }
+        @keyframes gridMove {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .content-grid { grid-template-columns: 1fr; }
+            .slider-slide { flex-direction: column; }
+            .slider-image { min-height: 200px; }
+            .slider-content { padding: 1.5rem; }
+            .slider-title { font-size: 1.5rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+
+        /* Scroll top */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-surface);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            box-shadow: var(--glow-cyan);
+            z-index: 9999;
+            display: none;
+        }
+        .scroll-top.show { display: flex; align-items: center; justify-content: center; }
+        .scroll-top:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-void);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">⬡</span>
+                <span class="logo-text">NEXUS BLOG</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">系统主页</a></li>
+                <li><a href="archive.html">数据归档</a></li>
+                <li><a href="posts.html">日志库</a></li>
+                <li><a href="about.html">关于我</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Featured Slider -->
+            <section class="featured-slider">
+                <div class="slider-container">
+                    <div class="slider-slide">
+                        <div class="slider-content">
+                            <span class="featured-badge"><i class="fas fa-star"></i> 核心数据</span>
+                            <h2 class="slider-title">Python入门指南：从零开始学习Python编程</h2>
+                            <p class="slider-excerpt">本文将带你从零开始学习Python编程，了解Python的基本语法和核心概念...</p>
+                            <a href="post-detail.html" class="slider-btn">访问数据 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="slider-image">⬡</div>
+                    </div>
+                    <div class="slider-slide">
+                        <div class="slider-content">
+                            <span class="featured-badge"><i class="fas fa-star"></i> 核心数据</span>
+                            <h2 class="slider-title">Django框架详解：构建现代化的Web应用</h2>
+                            <p class="slider-excerpt">深入了解Django框架的核心概念和组件，学习如何构建现代化的Web应用...</p>
+                            <a href="post-detail.html" class="slider-btn">访问数据 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="slider-image">⬡</div>
+                    </div>
+                </div>
+                <button class="slider-nav prev"><i class="fas fa-chevron-left"></i></button>
+                <button class="slider-nav next"><i class="fas fa-chevron-right"></i></button>
+                <div class="slider-controls">
+                    <button class="slider-dot active"></button>
+                    <button class="slider-dot"></button>
+                </div>
+            </section>
+
+            <div class="content-grid">
+                <!-- Posts -->
+                <div class="posts-section">
+                    <h2 class="section-title">最新日志</h2>
+
+                    <div class="post-card fade-in stagger-1">
+                        <div class="post-card-image">
+                            <span class="post-card-category">Python</span>
+                        </div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">Python入门指南：从零开始学习Python编程</a></h3>
+                            <p class="post-card-excerpt">本文将带你从零开始学习Python编程，了解Python的基本语法和核心概念。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/15</span>
+                                <span><i class="fas fa-eye"></i> 1234</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="post-card fade-in stagger-2">
+                        <div class="post-card-image">
+                            <span class="post-card-category">Django</span>
+                        </div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">Django框架详解：构建现代化的Web应用</a></h3>
+                            <p class="post-card-excerpt">深入了解Django框架的核心概念和组件，学习如何构建现代化的Web应用。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/10</span>
+                                <span><i class="fas fa-eye"></i> 987</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="post-card fade-in stagger-3">
+                        <div class="post-card-image">
+                            <span class="post-card-category">前端</span>
+                        </div>
+                        <div class="post-card-content">
+                            <h3 class="post-card-title"><a href="post-detail.html">前端开发基础：HTML、CSS、JavaScript入门</a></h3>
+                            <p class="post-card-excerpt">学习前端开发的基础知识，掌握HTML、CSS和JavaScript的核心概念。</p>
+                            <div class="post-card-meta">
+                                <span><i class="fas fa-user"></i> admin</span>
+                                <span><i class="fas fa-calendar"></i> 2024/01/05</span>
+                                <span><i class="fas fa-eye"></i> 756</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-widget author-card">
+                        <div class="author-avatar">N</div>
+                        <h3 class="author-name">NEXUS-01</h3>
+                        <p class="author-bio">SYSTEM_OPERATOR // 技术探索者<br>Python // Django // Web Dev</p>
+                        <a href="about.html" class="slider-btn" style="font-size: 0.9rem; margin-top: 1rem;">查看档案</a>
+                    </div>
+
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">标签云</h3>
+                        <div class="tag-cloud">
+                            <a href="#" class="tag">Python</a>
+                            <a href="#" class="tag">Django</a>
+                            <a href="#" class="tag">Web</a>
+                            <a href="#" class="tag">教程</a>
+                            <a href="#" class="tag">进阶</a>
+                            <a href="#" class="tag">JavaScript</a>
+                            <a href="#" class="tag">数据库</a>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">数据系列</h3>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 0.75rem;"><a href="#" style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-database" style="color: var(--neon-purple);"></i> Python进阶之路 <span style="color: var(--text-muted); font-size: 0.85rem;">(5)</span></a></li>
+                            <li style="margin-bottom: 0.75rem;"><a href="#" style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-network-wired" style="color: var(--neon-purple);"></i> Django实战 <span style="color: var(--text-muted); font-size: 0.85rem;">(3)</span></a></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">热门数据</h3>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 0.75rem;"><a href="#" style="display: flex; align-items: center; gap: 0.5rem;"><span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;">01</span> Python入门指南</a></li>
+                            <li style="margin-bottom: 0.75rem;"><a href="#" style="display: flex; align-items: center; gap: 0.5rem;"><span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;">02</span> Django框架详解</a></li>
+                            <li style="margin-bottom: 0.75rem;"><a href="#" style="display: flex; align-items: center; gap: 0.5rem;"><span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;">03</span> RESTful API设计</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-widget newsletter-widget">
+                        <h3 class="sidebar-title">订阅更新</h3>
+                        <p style="margin-bottom: 1rem; color: var(--text-secondary);">获取最新数据推送</p>
+                        <form class="newsletter-form">
+                            <input type="email" placeholder="输入邮箱地址" required>
+                            <button type="submit">订阅</button>
+                        </form>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>系统信息</h3>
+                    <p>记录技术学习过程，分享编程心得。专注于Python、Django、Web开发等技术领域。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">// 系统主页</a></li>
+                        <li><a href="archive.html">// 数据归档</a></li>
+                        <li><a href="posts.html">// 日志库</a></li>
+                        <li><a href="about.html">// 关于我</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>订阅通讯</h3>
+                    <p>订阅以获取最新数据更新</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>SYSTEM.STATUS: ONLINE // &copy; 2024 NEXUS BLOG. ALL RIGHTS RESERVED.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-weixin"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-decoration">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></button>
+
+    <script>
+        // Slider
+        const slider = document.querySelector('.featured-slider');
+        const slides = slider.querySelectorAll('.slider-slide');
+        const dots = slider.querySelectorAll('.slider-dot');
+        const prevBtn = slider.querySelector('.slider-nav.prev');
+        const nextBtn = slider.querySelector('.slider-nav.next');
+        let currentSlide = 0;
+        let autoplayInterval;
+
+        function goToSlide(index) {
+            currentSlide = index;
+            if (currentSlide >= slides.length) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = slides.length - 1;
+            slider.querySelector('.slider-container').style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+        }
+
+        function nextSlide() { goToSlide(currentSlide + 1); }
+        function prevSlide() { goToSlide(currentSlide - 1); }
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+
+        function startAutoplay() { autoplayInterval = setInterval(nextSlide, 5000); }
+        function stopAutoplay() { clearInterval(autoplayInterval); }
+
+        slider.addEventListener('mouseenter', stopAutoplay);
+        slider.addEventListener('mouseleave', startAutoplay);
+        startAutoplay();
+
+        dots.forEach((dot, i) => dot.addEventListener('click', () => goToSlide(i)));
+
+        // Scroll top
+        const scrollTopBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            scrollTopBtn.classList.toggle('show', window.pageYOffset > 300);
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+
+<script>
+/**
+ * Iframe 元素高亮注入脚本
+ * 需要在目标网站中引入此脚本来支持跨域 iframe 高亮功能
+ *
+ * 使用方法：
+ * 1. 将此脚本添加到目标网站的 HTML 中
+ * 2. 或通过浏览器扩展、用户脚本等方式注入
+ */
+
+(function () {
+  "use strict";
+
+  // 检查是否在 iframe 中
+  if (window.self === window.top) {
+    return; // 不在 iframe 中，不执行
+  }
+
+  // 检查是否已经初始化过
+  if (window.__iframeHighlightInitialized) {
+    return;
+  }
+  window.__iframeHighlightInitialized = true;
+  console.log("Iframe 高亮脚本已加载");
+
+  // 创建高亮覆盖层
+  var overlay = document.createElement("div");
+  overlay.id = "iframe-highlight-overlay";
+  overlay.style.cssText = "\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    pointer-events: none;\n    z-index: 999999;\n    overflow: hidden;\n  ";
+
+  // 创建悬停高亮框（虚线边框）
+  var highlightBox = document.createElement("div");
+  highlightBox.id = "iframe-highlight-box";
+  highlightBox.style.cssText = "\n    position: absolute;\n    border: 2px dashed #007AFF;\n    background: rgba(0, 122, 255, 0.08);\n    pointer-events: none;\n    display: none;\n    transition: all 0.1s ease;\n    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);\n    border-radius: 2px;\n  ";
+
+  // 创建选中节点的常驻高亮框（实线边框）
+  var selectedBox = document.createElement("div");
+  selectedBox.id = "iframe-selected-box";
+  selectedBox.style.cssText = "\n    position: absolute;\n    border: 2px solid #007AFF;\n    pointer-events: none;\n    display: none;\n    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 107, 53, 0.4);\n    border-radius: 2px;\n    z-index: 1000000;\n  ";
+
+  // 创建悬停标签显示
+  var tagLabel = document.createElement("div");
+  tagLabel.id = "iframe-tag-label";
+  tagLabel.style.cssText = "\n    position: absolute;\n    background: #007AFF;\n    color: white;\n    padding: 2px 6px;\n    font-size: 11px;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    border-radius: 2px;\n    pointer-events: none;\n    display: none;\n    white-space: nowrap;\n    z-index: 1000001;\n    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);\n    font-weight: 500;\n  ";
+
+  // 创建选中节点标签
+  var selectedLabel = document.createElement("div");
+  selectedLabel.id = "iframe-selected-label";
+  selectedLabel.style.cssText = "\n    position: absolute;\n    background: #007AFF;\n    color: white;\n    padding: 3px 8px;\n    font-size: 11px;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    border-radius: 3px;\n    pointer-events: none;\n    display: none;\n    white-space: nowrap;\n    z-index: 1000002;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n    font-weight: 600;\n  ";
+  overlay.appendChild(highlightBox);
+  overlay.appendChild(selectedBox);
+  overlay.appendChild(tagLabel);
+  overlay.appendChild(selectedLabel);
+  document.body.appendChild(overlay);
+
+  // 存储当前选中的元素
+  var selectedElement = null;
+  var highlightEnabled = false;
+
+  // 更新选中元素的高亮显示
+  function updateSelectedHighlight(element) {
+    console.log("updateSelectedHighlight called with:", element);
+    if (!element) {
+      selectedBox.style.display = "none";
+      selectedLabel.style.display = "none";
+      selectedElement = null;
+      console.log("Cleared selected highlight");
+      return;
+    }
+    selectedElement = element;
+    var rect = element.getBoundingClientRect();
+    console.log("Selected element rect:", rect);
+
+    // 更新选中高亮框位置
+    selectedBox.style.display = "block";
+    selectedBox.style.left = "".concat(rect.left - 2, "px");
+    selectedBox.style.top = "".concat(rect.top - 2, "px");
+    selectedBox.style.width = "".concat(rect.width + 4, "px");
+    selectedBox.style.height = "".concat(rect.height + 4, "px");
+
+    // 更新选中标签位置和内容
+    selectedLabel.style.display = "block";
+    selectedLabel.textContent = "\u2713 <".concat(element.tagName.toLowerCase(), ">");
+
+    // 计算标签位置，确保不超出视窗
+    var labelTop = rect.top - 28;
+    var labelLeft = rect.left;
+
+    // 如果标签会超出顶部，显示在元素下方
+    if (labelTop < 5) {
+      labelTop = rect.bottom + 5;
+    }
+
+    // 如果标签会超出右侧，向左调整
+    var labelWidth = selectedLabel.offsetWidth || 100; // 预估宽度
+    if (labelLeft + labelWidth > window.innerWidth - 10) {
+      labelLeft = window.innerWidth - labelWidth - 10;
+    }
+    selectedLabel.style.left = "".concat(Math.max(5, labelLeft), "px");
+    selectedLabel.style.top = "".concat(labelTop, "px");
+    console.log("Selected highlight positioned at:", {
+      left: selectedBox.style.left,
+      top: selectedBox.style.top,
+      width: selectedBox.style.width,
+      height: selectedBox.style.height
+    });
+  }
+  function getElementSelector(element) {
+    if (!(element instanceof Element)) throw new Error('Argument must be a DOM element');
+    var segments = [];
+    var current = element;
+    while (current !== document.documentElement) {
+      var selector = '';
+      // 优先检查唯一ID
+      if (current.id && document.querySelectorAll("#".concat(current.id)).length === 1) {
+        segments.unshift("#".concat(current.id));
+        break; // ID唯一，无需继续向上
+      }
+
+      // 生成类名选择器（取第一个有效类名）
+      var classes = Array.from(current.classList).filter(function (c) {
+        return !c.startsWith('js-');
+      });
+      var className = classes.length > 0 ? ".".concat(classes[0]) : '';
+
+      // 生成位置索引（nth-child）
+      var tag = current.tagName.toLowerCase();
+      if (!className) {
+        var siblings = Array.from(current.parentNode.children);
+        var index = siblings.findIndex(function (el) {
+          return el === current;
+        }) + 1;
+        selector = "".concat(tag, ":nth-child(").concat(index, ")");
+      } else {
+        selector = className;
+      }
+      segments.unshift(selector);
+      current = current.parentElement;
+    }
+
+    // 处理根元素
+    if (current === document.documentElement) {
+      segments.unshift('html');
+    }
+    return segments.join(' > ');
+  }
+
+  // 获取元素文本内容
+  function getElementText(element) {
+    var _element$textContent;
+    if (element.tagName === "INPUT") {
+      return element.value || element.placeholder || "";
+    }
+    if (element.tagName === "TEXTAREA") {
+      return element.value || element.placeholder || "";
+    }
+    var text = ((_element$textContent = element.textContent) === null || _element$textContent === void 0 ? void 0 : _element$textContent.trim()) || "";
+    return text.length > 50 ? text.substring(0, 50) + "..." : text;
+  }
+
+  // 获取元素属性信息
+  function getElementAttributes(element) {
+    var attrs = {};
+    for (var i = 0; i < element.attributes.length; i++) {
+      var attr = element.attributes[i];
+      attrs[attr.name] = attr.value;
+    }
+    return attrs;
+  }
+
+  // 鼠标悬停事件处理
+  function handleMouseOver(e) {
+    if (!highlightEnabled) return;
+    var target = e.target;
+    if (!target || target === overlay || target === highlightBox || target === tagLabel || target === selectedBox || target === selectedLabel) {
+      return;
+    }
+
+    // 避免高亮 html 和 body 元素
+    if (target === document.documentElement || target === document.body) {
+      return;
+    }
+
+    // 如果是已选中的元素，不显示悬停高亮
+    if (target === selectedElement) {
+      highlightBox.style.display = "none";
+      tagLabel.style.display = "none";
+      return;
+    }
+    var rect = target.getBoundingClientRect();
+    var selector = getElementSelector(target);
+    var text = getElementText(target);
+    var attributes = getElementAttributes(target);
+
+    // 更新悬停高亮框位置
+    highlightBox.style.display = "block";
+    highlightBox.style.left = "".concat(rect.left - 2, "px");
+    highlightBox.style.top = "".concat(rect.top - 2, "px");
+    highlightBox.style.width = "".concat(rect.width + 4, "px");
+    highlightBox.style.height = "".concat(rect.height + 4, "px");
+
+    // 更新标签位置和内容
+    tagLabel.style.display = "block";
+    tagLabel.textContent = "<".concat(target.tagName.toLowerCase(), ">");
+
+    // 计算标签位置，确保不超出视窗
+    var labelTop = rect.top - 22;
+    var labelLeft = rect.left;
+
+    // 如果标签会超出顶部，显示在元素下方
+    if (labelTop < 0) {
+      labelTop = rect.bottom + 5;
+    }
+
+    // 如果标签会超出右侧，向左调整
+    if (labelLeft + tagLabel.offsetWidth > window.innerWidth) {
+      labelLeft = window.innerWidth - tagLabel.offsetWidth - 5;
+    }
+    tagLabel.style.left = "".concat(Math.max(0, labelLeft), "px");
+    tagLabel.style.top = "".concat(labelTop, "px");
+
+    // 发送消息到父窗口
+    var elementInfo = {
+      tagName: target.tagName.toLowerCase(),
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
+      },
+      selector: selector,
+      text: text,
+      attributes: attributes,
+      url: window.location.href,
+      path: window.location.pathname,
+      timestamp: Date.now()
+    };
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-hover",
+        data: elementInfo,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 鼠标离开事件处理
+  function handleMouseOut(e) {
+    if (!highlightEnabled) return;
+    var relatedTarget = e.relatedTarget;
+
+    // 如果鼠标移动到高亮相关元素上，不隐藏高亮
+    if (relatedTarget && (relatedTarget === highlightBox || relatedTarget === tagLabel || relatedTarget === overlay || relatedTarget === selectedBox || relatedTarget === selectedLabel)) {
+      return;
+    }
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-hover",
+        data: null,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 点击事件处理
+  function handleClick(e) {
+    var target = e.target;
+    if (!target || target === overlay || target === highlightBox || target === tagLabel || target === selectedBox || target === selectedLabel) {
+      return;
+    }
+
+    // 避免处理 html 和 body 元素
+    if (target === document.documentElement || target === document.body) {
+      return;
+    }
+
+    // 检查是否是交互元素，这些元素需要保留默认行为
+    var isInteractiveElement = ['input', 'textarea', 'select', 'button', 'a'].includes(target.tagName.toLowerCase());
+
+    // 如果高亮功能启用，对于非交互元素阻止默认行为和事件传播
+    if (highlightEnabled) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    var rect = target.getBoundingClientRect();
+    var selector = getElementSelector(target);
+    var text = getElementText(target);
+    var attributes = getElementAttributes(target);
+    console.log("Element clicked:", {
+      tagName: target.tagName,
+      selector: selector,
+      rect: rect
+    });
+
+    // 立即更新选中高亮
+    updateSelectedHighlight(target);
+
+    // 隐藏悬停高亮，因为现在是选中状态
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    var elementInfo = {
+      tagName: target.tagName.toLowerCase(),
+      rect: {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
+      },
+      selector: selector,
+      text: text,
+      attributes: attributes,
+      url: window.location.href,
+      path: window.location.pathname,
+      timestamp: Date.now()
+    };
+    try {
+      window.parent.postMessage({
+        type: "iframe-element-click",
+        data: elementInfo,
+        source: "iframe-highlight-injector"
+      }, "*");
+    } catch (error) {
+      console.warn("无法发送消息到父窗口:", error);
+    }
+  }
+
+  // 监听来自父窗口的消息
+  function handleParentMessage(event) {
+    console.log("Received message from parent:", event.data);
+    if (event.data.type === "iframe-highlight-toggle") {
+      var enabled = event.data.enabled;
+      console.log("Highlight toggle:", enabled);
+      if (enabled) {
+        enableHighlight();
+      } else {
+        disableHighlight();
+      }
+    } else if (event.data.type === "enable-iframe-highlight") {
+      console.log("Enable iframe highlight");
+      enableHighlight();
+    } else if (event.data.type === "disable-iframe-highlight") {
+      console.log("Disable iframe highlight");
+      disableHighlight();
+    } else if (event.data.type === "toggle-iframe-highlight") {
+      var _enabled = event.data.enabled !== undefined ? event.data.enabled : !highlightEnabled;
+      console.log("Toggle iframe highlight to:", _enabled);
+      if (_enabled) {
+        enableHighlight();
+      } else {
+        disableHighlight();
+      }
+    } else if (event.data.type === "update-selected-element") {
+      var selector = event.data.selector;
+      console.log("Update selected element with selector:", selector);
+      if (selector) {
+        try {
+          var element = document.querySelector(selector);
+          console.log("Found element by selector:", element);
+          updateSelectedHighlight(element);
+        } catch (error) {
+          console.warn("Failed to select element:", error);
+          updateSelectedHighlight(null);
+        }
+      } else {
+        updateSelectedHighlight(null);
+      }
+    } else if (event.data.type === "clear-selected-element") {
+      console.log("Clear selected element");
+      updateSelectedHighlight(null);
+    }
+  }
+
+  // 启用高亮功能
+  function enableHighlight() {
+    console.log("Enabling highlight");
+    document.addEventListener("mouseover", handleMouseOver, true);
+    document.addEventListener("mouseout", handleMouseOut, true);
+    document.addEventListener("click", handleClick, true);
+    highlightEnabled = true;
+    overlay.style.display = "block";
+  }
+
+  // 禁用高亮功能
+  function disableHighlight() {
+    console.log("Disabling highlight");
+    highlightEnabled = false;
+    // 保持事件监听器，但通过 highlightEnabled 变量控制行为
+    // 这样可以保留选中状态的显示
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    // 不隐藏 selectedBox 和 selectedLabel，保留选中状态
+  }
+
+  // 完全禁用高亮功能（移除所有监听器）
+  function fullyDisableHighlight() {
+    console.log("Fully disabling highlight");
+    highlightEnabled = false;
+    document.removeEventListener("mouseover", handleMouseOver, true);
+    document.removeEventListener("mouseout", handleMouseOut, true);
+    document.removeEventListener("click", handleClick, true);
+    overlay.style.display = "none";
+    highlightBox.style.display = "none";
+    tagLabel.style.display = "none";
+    selectedBox.style.display = "none";
+    selectedLabel.style.display = "none";
+  }
+
+  // 添加事件监听
+  enableHighlight();
+  window.addEventListener("message", handleParentMessage);
+
+  // 暴露全局函数供外部调用
+  window.__iframeHighlightControl = {
+    enable: enableHighlight,
+    disable: disableHighlight,
+    fullyDisable: fullyDisableHighlight,
+    isEnabled: function isEnabled() {
+      return highlightEnabled;
+    },
+    getSelectedElement: function getSelectedElement() {
+      return selectedElement;
+    },
+    updateSelected: updateSelectedHighlight,
+    // 通过消息发送开关控制
+    sendToggleMessage: function sendToggleMessage(enabled) {
+      window.parent.postMessage({
+        type: 'iframe-highlight-status',
+        enabled: enabled || highlightEnabled,
+        source: 'iframe-highlight-injector'
+      }, '*');
+    }
+  };
+
+  // 通知父窗口脚本已加载
+  try {
+    window.parent.postMessage({
+      type: "iframe-highlight-ready",
+      data: {
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: Date.now()
+      },
+      source: "iframe-highlight-injector"
+    }, "*");
+  } catch (error) {
+    console.warn("无法发送就绪消息到父窗口:", error);
+  }
+
+  // 清理函数
+  window.__iframeHighlightCleanup = function () {
+    fullyDisableHighlight();
+    window.removeEventListener("message", handleParentMessage);
+    if (overlay.parentElement) {
+      overlay.parentElement.removeChild(overlay);
+    }
+    delete window.__iframeHighlightInitialized;
+    delete window.__iframeHighlightCleanup;
+  };
+})();
+
+</script>
+</body>
+</html>

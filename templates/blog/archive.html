@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}归档 - 樱花技术博客{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem;">
+        <div class="archive-content">
+            <h1 style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-archive" style="color: var(--color-gold);"></i>
+                文章归档
+            </h1>
+
+            {% for year in years %}
+            <section class="archive-section">
+                <h2 class="archive-year-title">{{ year }} 年</h2>
+                <div class="archive-posts">
+                    {% for post in posts_by_year|dictgetitem:year %}
+                    <a href="{% url 'blog:post_detail' post.slug %}" class="archive-post">
+                        <span class="archive-date">{{ post.published_at|date:"m月d日" }}</span>
+                        <span class="archive-title">{{ post.title }}</span>
+                        {% if post.category %}
+                        <span class="tag" style="font-size: 0.75rem;">{{ post.category.name }}</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endfor %}
+
+            {% if not posts %}
+            <p style="text-align: center; color: var(--color-text-muted); padding: 3rem;">
+                暂无归档文章。
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <!-- 标签云 -->
+            <div class="sidebar-widget">
+                <h3 class="sidebar-title">标签云</h3>
+                <div class="tag-cloud">
+                    {% for tag in all_tags %}
+                    <a href="{% url 'blog:tag' tag.slug %}" class="tag">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 系列 -->
+            {% if all_series %}
+            <div class="sidebar-widget">
+                <h3 class="sidebar-title">文章系列</h3>
+                <ul style="list-style: none;">
+                    {% for series in all_series %}
+                    <li style="margin-bottom: 0.75rem;">
+                        <a href="{% url 'blog:series' series.slug %}" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-book" style="color: var(--color-gold);"></i>
+                            {{ series.name }}
+                            <span style="color: var(--color-text-muted); font-size: 0.85rem;">({{ series.post_count }})</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- 年份筛选 -->
+            <div class="sidebar-widget">
+                <h3 class="sidebar-title">按年份</h3>
+                <ul style="list-style: none;">
+                    {% for year in years %}
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'blog:archive_year' year %}">
+                            {{ year }} 年
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

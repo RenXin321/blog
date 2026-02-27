@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据归档 - NEXUS BLOG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-void: #020617;
+            --bg-surface: #0f172a;
+            --bg-panel: rgba(15, 23, 42, 0.8);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bd00ff;
+            --neon-green: #0aff60;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-base: #1e293b;
+            --glow-cyan: 0 0 10px #00f3ff, 0 0 20px rgba(0, 243, 255, 0.3);
+            --glow-purple: 0 0 10px #bd00ff, 0 0 20px rgba(189, 0, 255, 0.3);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-void);
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 20% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 243, 255, 0.1) 0%, transparent 50%);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+        }
+        h1, h2, h3 {
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        a { color: var(--neon-cyan); text-decoration: none; transition: all 0.15s ease; }
+        a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-base);
+        }
+        .site-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .navbar { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .logo-icon { font-size: 1.5rem; }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--text-secondary); font-weight: 500; padding: 0.5rem 1rem; position: relative; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-menu a::before { content: '[ '; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a::after { content: ' ]'; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .nav-menu a:hover::before, .nav-menu a:hover::after, .nav-menu a.active::before, .nav-menu a.active::after { opacity: 1; }
+
+        .main-content { padding-top: 90px; min-height: calc(100vh - 300px); }
+
+        .content-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+
+        .archive-section { margin-bottom: 2rem; }
+        .archive-year-title {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--neon-cyan);
+            display: inline-block;
+            color: var(--neon-cyan);
+        }
+        .archive-post {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .archive-post:hover {
+            transform: translateX(5px);
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+        .archive-date { color: var(--neon-cyan); font-weight: 500; min-width: 80px; font-family: 'JetBrains Mono', monospace; }
+        .archive-title { flex: 1; color: var(--text-primary); }
+        .archive-title:hover { color: var(--neon-cyan); }
+        .tag {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--neon-purple);
+            border: 1px solid var(--neon-purple);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sidebar-widget { background: var(--bg-surface); border: 1px solid var(--border-base); padding: 1.5rem; margin-bottom: 1.5rem; position: relative; }
+        .sidebar-widget::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .sidebar-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-base);
+            color: var(--neon-cyan);
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tag-hover {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-base);
+            transition: all 0.15s ease;
+        }
+        .tag-hover:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+
+        .site-footer { background: var(--bg-surface); color: var(--text-secondary); padding: 4rem 0 2rem; margin-top: 4rem; position: relative; border-top: 1px solid var(--border-base); }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-green), var(--neon-cyan));
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .footer-section h3 { color: var(--neon-cyan); font-size: 1.1rem; margin-bottom: 1rem; font-family: 'Rajdhani', sans-serif; }
+        .footer-section p { color: var(--text-secondary); }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-secondary); }
+        .footer-links a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+
+        @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } .nav-menu { display: none; } }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo"><span class="logo-icon">⬡</span><span class="logo-text">NEXUS BLOG</span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html">系统主页</a></li>
+                <li><a href="archive.html" class="active">数据归档</a></li>
+                <li><a href="posts.html">日志库</a></li>
+                <li><a href="about.html">关于我</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <div class="archive-content">
+                    <h1 style="margin-bottom: 2rem; color: var(--neon-cyan);"><i class="fas fa-database" style="margin-right: 0.5rem;"></i> 数据归档</h1>
+
+                    <section class="archive-section">
+                        <h2 class="archive-year-title">2024 // 年</h2>
+                        <div class="archive-posts">
+                            <a href="post-detail.html" class="archive-post">
+                                <span class="archive-date">01.15</span>
+                                <span class="archive-title">Python入门指南：从零开始学习Python编程</span>
+                                <span class="tag">Python</span>
+                            </a>
+                            <a href="post-detail.html" class="archive-post">
+                                <span class="archive-date">01.10</span>
+                                <span class="archive-title">Django框架详解：构建现代化的Web应用</span>
+                                <span class="tag">Django</span>
+                            </a>
+                            <a href="post-detail.html" class="archive-post">
+                                <span class="archive-date">01.05</span>
+                                <span class="archive-title">前端开发基础：HTML、CSS、JavaScript入门</span>
+                                <span class="tag">前端</span>
+                            </a>
+                            <a href="post-detail.html" class="archive-post">
+                                <span class="archive-date">01.01</span>
+                                <span class="archive-title">RESTful API设计与实现</span>
+                                <span class="tag">API</span>
+                            </a>
+                        </div>
+                    </section>
+
+                    <section class="archive-section">
+                        <h2 class="archive-year-title">2023 // 年</h2>
+                        <div class="archive-posts">
+                            <a href="post-detail.html" class="archive-post">
+                                <span class="archive-date">12.20</span>
+                                <span class="archive-title">Docker容器化部署实战</span>
+                                <span class="tag">DevOps</span>
+                            </a>
+                            <a href="post-detail.html" class="archive-post">
+                                <span class="archive-date">12.15</span>
+                                <span class="archive-title">Git版本控制完全指南</span>
+                                <span class="tag">Git</span>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+
+                <aside>
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">标签云</h3>
+                        <div class="tag-cloud">
+                            <a href="#" class="tag-hover">Python</a>
+                            <a href="#" class="tag-hover">Django</a>
+                            <a href="#" class="tag-hover">Web</a>
+                            <a href="#" class="tag-hover">教程</a>
+                            <a href="#" class="tag-hover">进阶</a>
+                        </div>
+                    </div>
+                    <div class="sidebar-widget">
+                        <h3 class="sidebar-title">按年份</h3>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">// 2024</a></li>
+                            <li style="margin-bottom: 0.5rem;"><a href="#" style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">// 2023</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>系统信息</h3>
+                    <p>记录技术学习过程，分享编程心得。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">// 系统主页</a></li>
+                        <li><a href="archive.html">// 数据归档</a></li>
+                        <li><a href="about.html">// 关于我</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

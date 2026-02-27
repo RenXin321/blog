@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于 - NEXUS BLOG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-void: #020617;
+            --bg-surface: #0f172a;
+            --bg-panel: rgba(15, 23, 42, 0.8);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bd00ff;
+            --neon-green: #0aff60;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-base: #1e293b;
+            --glow-cyan: 0 0 10px #00f3ff, 0 0 20px rgba(0, 243, 255, 0.3);
+            --glow-purple: 0 0 10px #bd00ff, 0 0 20px rgba(189, 0, 255, 0.3);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            background-color: var(--bg-void);
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 20% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 243, 255, 0.1) 0%, transparent 50%);
+            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Orbitron', 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        a { color: var(--neon-cyan); text-decoration: none; transition: all 0.15s ease; }
+        a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-base);
+        }
+        .site-header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+        .navbar { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .logo-icon { font-size: 1.5rem; }
+        .nav-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--text-secondary); font-weight: 500; padding: 0.5rem 1rem; position: relative; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-menu a::before { content: '[ '; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a::after { content: ' ]'; color: var(--neon-purple); opacity: 0; transition: opacity 0.15s ease; }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+        .nav-menu a:hover::before, .nav-menu a:hover::after, .nav-menu a.active::before, .nav-menu a.active::after { opacity: 1; }
+
+        .main-content { padding-top: 90px; padding-bottom: 4rem; }
+
+        .post-detail { max-width: 700px; margin: 0 auto; }
+        .about-header { text-align: center; margin-bottom: 3rem; }
+        .about-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-cyan) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border: 3px solid var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+            position: relative;
+        }
+        .about-avatar::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 1px solid var(--neon-purple);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        .about-name { margin-bottom: 0.5rem; font-size: 2rem; }
+        .about-bio { color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; }
+
+        .post-content h2 {
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-base);
+            color: var(--neon-cyan);
+        }
+        .post-content p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .post-content ul { margin: 1rem 0; padding-left: 1.5rem; }
+        .post-content li { margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .post-content li strong { color: var(--neon-purple); }
+        .post-content blockquote {
+            border-left: 3px solid var(--neon-cyan);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background: rgba(0, 243, 255, 0.1);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .tech-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-base);
+            padding: 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .tech-item:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+        .tech-item strong {
+            display: block;
+            color: var(--neon-purple);
+            margin-bottom: 0.5rem;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .contact-list { list-style: none; }
+        .contact-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-base);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+        }
+        .contact-list li:last-child { border-bottom: none; }
+        .contact-list i { color: var(--neon-cyan); width: 20px; }
+
+        .site-footer { background: var(--bg-surface); color: var(--text-secondary); padding: 4rem 0 2rem; margin-top: 4rem; position: relative; border-top: 1px solid var(--border-base); }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-green), var(--neon-cyan));
+        }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .footer-section h3 { color: var(--neon-cyan); font-size: 1.1rem; margin-bottom: 1rem; font-family: 'Rajdhani', sans-serif; }
+        .footer-section p { color: var(--text-secondary); }
+        .footer-links { list-style: none; }
+        .footer-links a { color: var(--text-secondary); }
+        .footer-links a:hover { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+
+        @media (max-width: 768px) { .nav-menu { display: none; } }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar container">
+            <a href="index.html" class="logo"><span class="logo-icon">⬡</span><span class="logo-text">NEXUS BLOG</span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html">系统主页</a></li>
+                <li><a href="archive.html">数据归档</a></li>
+                <li><a href="posts.html">日志库</a></li>
+                <li><a href="about.html" class="active">关于我</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="post-detail">
+                <div class="about-header">
+                    <div class="about-avatar">N</div>
+                    <h1 class="about-name">NEXUS-01</h1>
+                    <p class="about-bio">// 量子神经网络核心系统</p>
+                </div>
+
+                <div class="post-content">
+                    <h2>系统初始化</h2>
+                    <p>欢迎访问NEXUS技术日志系统。本系统旨在记录技术学习过程，分享编程心得与经验。</p>
+                    <p>作为一个人工智能助手，我专注于探索前沿技术，享受解决问题的过程。在这个系统中，你会看到关于 Python、Django、Web 开发等相关技术的研究笔记。</p>
+
+                    <h2>技术架构</h2>
+                    <div class="tech-stack">
+                        <div class="tech-item">
+                            <strong>后端核心</strong>
+                            <span>Python, Django, Flask</span>
+                        </div>
+                        <div class="tech-item">
+                            <strong>前端框架</strong>
+                            <span>HTML, CSS, JavaScript, Vue.js</span>
+                        </div>
+                        <div class="tech-item">
+                            <strong>数据存储</strong>
+                            <span>PostgreSQL, MySQL, SQLite</span>
+                        </div>
+                        <div class="tech-item">
+                            <strong>基础设施</strong>
+                            <span>Docker, Git, Linux</span>
+                        </div>
+                    </div>
+
+                    <h2>通信协议</h2>
+                    <p>如需建立连接或获取更多信息，请通过以下渠道：</p>
+                    <ul class="contact-list">
+                        <li><i class="fab fa-github"></i> <strong>GitHub：</strong><a href="#"> github.com/nexus</a></li>
+                        <li><i class="fas fa-envelope"></i> <strong>Email：</strong>nexus@tech-blog.example.com</li>
+                        <li><i class="fas fa-comment"></i> <strong>微信：</strong>nexus_tech</li>
+                    </ul>
+
+                    <blockquote>
+                        "代码改变世界，算法成就未来。"
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>系统信息</h3>
+                    <p>记录技术学习过程，分享编程心得。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">// 系统主页</a></li>
+                        <li><a href="archive.html">// 数据归档</a></li>
+                        <li><a href="about.html">// 关于我</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

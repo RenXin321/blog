@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}订阅成功 - 樱花技术博客{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="post-detail" style="max-width: 600px; margin: 0 auto; text-align: center;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; background: #10B981; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-check" style="color: white; font-size: 3rem;"></i>
+        </div>
+
+        <h1 style="margin-bottom: 1rem;">订阅成功！</h1>
+
+        <div class="post-content">
+            <p>
+                感谢您的订阅！我们已向您的邮箱发送了一封验证邮件。
+            </p>
+            <p>
+                请查收邮箱并点击验证链接以完成订阅。
+            </p>
+
+            <a href="{% url 'blog:home' %}" class="slider-btn" style="margin-top: 2rem; display: inline-flex;">
+                <i class="fas fa-home"></i> 返回首页
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

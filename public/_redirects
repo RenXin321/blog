@@ -1,0 +1,5 @@
+/index /dist/index.html 200
+/posts /dist/posts.html 200
+/archive /dist/archive.html 200
+/about /dist/about.html 200
+/post-detail /dist/post-detail.html 200
